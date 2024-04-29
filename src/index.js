@@ -1,10 +1,6 @@
 import React, { useState, useRef, useCallback, useLayoutEffect } from 'react'
 import './index.css'
 
-interface IProps {
-  content: string
-}
-
 const defaultProps = {
   style: {},
   content: '',
@@ -15,7 +11,7 @@ const defaultProps = {
   lineHeight: 20,
 }
 
-export const Ellipsis: React.FC<IProps> = (props) => {
+const Ellipsis = (props) => {
   const {
     content,
     rows,
@@ -28,22 +24,22 @@ export const Ellipsis: React.FC<IProps> = (props) => {
   const maxHeight = Math.floor(lineHeight * (Number(rows) + 0.5))
   const [exceeded, setExceeded] = useState(false)
   const [expanded, setExpanded] = useState(false)
-  const ellipsis = useRef<string>()
-  const root = useRef<HTMLDivElement>(null)
-  const container = useRef<HTMLDivElement | null>(null)
+  const ellipsis = useRef()
+  const root = useRef(null)
+  const container = useRef(null)
 
   // 计算省略具体位置
-  const tailor: (left: number, right: number) => string = useCallback((
-    left: number,
-    right: number
+  const tailor = useCallback((
+    left,
+    right
   ) => {
     const actionText = expanded ? collapseText : expandText
     if (right - left <= 1) {
       return content.slice(0, left) + symbol
     }
     const middle = Math.round((left + right) / 2)
-    container.current!.innerText = content.slice(0, middle) + symbol + actionText
-    if ( container.current!.offsetHeight <= maxHeight) {
+    container.current.innerText = content.slice(0, middle) + symbol + actionText
+    if ( container.current.offsetHeight <= maxHeight) {
       return tailor(middle, right)
     }
     return tailor(left, middle)
@@ -51,7 +47,7 @@ export const Ellipsis: React.FC<IProps> = (props) => {
 
   // 计算省略号的位置
   const calcEllipse = useCallback(() => {
-    if ( container.current!.offsetHeight <= maxHeight) {
+    if ( container.current.offsetHeight <= maxHeight) {
       setExceeded(false)
     } else {
       setExceeded(true)
@@ -66,9 +62,9 @@ export const Ellipsis: React.FC<IProps> = (props) => {
     if (!root.current) return
     const originStyle = window.getComputedStyle(root.current)
     container.current = document.createElement('div')
-    const styleNames: string[] = Array.prototype.slice.apply(originStyle)
+    const styleNames = Array.prototype.slice.apply(originStyle)
     styleNames.forEach((name) => {
-      container.current!.style.setProperty(name, originStyle.getPropertyValue(name))
+      container.current.style.setProperty(name, originStyle.getPropertyValue(name))
     })
     container.current.style.height = 'auto'
     container.current.innerText = content
@@ -76,15 +72,6 @@ export const Ellipsis: React.FC<IProps> = (props) => {
     calcEllipse()
     document.body.removeChild( container.current)
   }, [calcEllipse, content])
-  
-  // 展开收起
-  const clickHandle = (type: number) => {
-    if (type === 1) {
-      setExpanded(true)
-    } else {
-      setExpanded(false)
-    }
-  }
 
   useLayoutEffect(() => {
     if (content) {
@@ -103,7 +90,7 @@ export const Ellipsis: React.FC<IProps> = (props) => {
               className="ellipsis-text"
               onClick={(e) => {
                 e.stopPropagation()
-                clickHandle(1)
+                setExpanded(true)
               }}
             >
               {expandText}
@@ -119,7 +106,7 @@ export const Ellipsis: React.FC<IProps> = (props) => {
               className="ellipsis-text"
               onClick={(e) => {
                 e.stopPropagation()
-                clickHandle(2)
+                setExpanded(false)
               }}
             >
               {collapseText}
@@ -130,3 +117,4 @@ export const Ellipsis: React.FC<IProps> = (props) => {
     </div>
   )
 }
+export default Ellipsis
