@@ -14,5 +14,5 @@ import Ellipsis from '@shanyibiao/react-ellipsis';
 # 运行例子
 ```javascript copy
 npm install
-npm run dev
+npm start
 ```
