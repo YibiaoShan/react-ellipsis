@@ -1,6 +1,6 @@
 {
   "name": "@shanyibiao/react-ellipsis",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "React的文本省略组件",
   "main": "dist/index.js",
   "scripts": {
